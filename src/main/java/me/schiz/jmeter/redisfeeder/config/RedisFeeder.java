@@ -2,7 +2,6 @@ package me.schiz.jmeter.redisfeeder.config;
 
 import me.schiz.jmeter.redisfeeder.Configuration;
 import org.apache.jmeter.config.ConfigTestElement;
-import org.apache.jmeter.testbeans.TestBean;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
@@ -13,19 +12,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RedisFeeder
 		extends ConfigTestElement
-		implements TestStateListener, TestBean {
+		implements TestStateListener {
 	private static final Logger log = LoggingManager.getLoggerForClass();
 	private static volatile RedisFeeder instance = null;
 	private ConcurrentHashMap<String, Configuration> configurations;
 	private ConcurrentHashMap<String, RedisClient> clients;
 
-	protected static String INSTANCE_NAME = "me.schiz.jmeter.redisfeeder.instanceName";
-	protected static String HOST = "me.schiz.jmeter.redisfeeder.host";
-	protected static String PORT = "me.schiz.jmeter.redisfeeder.port";
+	public static final String INSTANCE_NAME = "me.schiz.jmeter.redisfeeder.instanceName";
+	public static final String HOST = "me.schiz.jmeter.redisfeeder.host";
+	public static final String PORT = "me.schiz.jmeter.redisfeeder.port";
 
-	public static String DEFAULT_INSTANCE_NAME = "default";
-	public static String DEFAULT_HOST = "localhost";
-	public static int DEFAULT_PORT = 6379;
+	public static final String DEFAULT_INSTANCE_NAME = "default";
+	public static final String DEFAULT_HOST = "localhost";
+	public static final int DEFAULT_PORT = 6379;
 
 	public RedisFeeder() {
 		if(instance == null) {
@@ -38,11 +37,11 @@ public class RedisFeeder
 	}
 
 	public String getInstanceName() {
-		return getPropertyAsString(INSTANCE_NAME);
+		return getPropertyAsString(INSTANCE_NAME, DEFAULT_INSTANCE_NAME);
 	}
 
 	public void setInstanceName(String name) {
-		setProperty(INSTANCE_NAME, name, DEFAULT_INSTANCE_NAME);
+		setProperty(INSTANCE_NAME, name);
 	}
 
 	public String getHost() {
@@ -50,18 +49,18 @@ public class RedisFeeder
 	}
 
 	public void setHost(String host) {
-		setProperty(HOST, host, DEFAULT_HOST);
+		setProperty(HOST, host);
 	}
 
 	public int getPort() {
-		return getPropertyAsInt(PORT);
+		return getPropertyAsInt(PORT, DEFAULT_PORT);
 	}
 
 	public void setPort(int port) {
-		setProperty(PORT, port, DEFAULT_PORT);
+		setProperty(PORT, port);
 	}
 
-	public RedisFeeder getInstance() {
+	public static RedisFeeder getInstance() {
 		return instance;
 	}
 
@@ -91,11 +90,11 @@ public class RedisFeeder
 	@Override
 	public void testStarted() {
 		Configuration configuration = new Configuration(getHost(), getPort());
-		Configuration prev = getInstance().configurations.putIfAbsent(getInstanceName(), configuration);
+		Configuration prev = getInstance().configurations.put(getInstanceName(), configuration);
 		if(prev != null) {
-			log.warn("configuration `" + getInstanceName() + "` already created");
+			log.info("configuration `" + getInstanceName() + "` rewrited");
 		} else {
-			log.info("configuration `" + getInstanceName() + "` created");
+			log.info("configuration `" + getInstanceName() + "` [" + getHost() + "]:" + getPort() + " created");
 		}
 	}
 

@@ -43,14 +43,14 @@ public class RedisFunction  extends AbstractFunction {
 		String command;
 		Object[] args = null;
 		synchronized (values) {
-			instance = ((CompoundVariable)values[0]).execute();
-			command = ((CompoundVariable)values[1]).execute();
+			instance = ((CompoundVariable)values[0]).execute().trim();
+			command = ((CompoundVariable)values[1]).execute().trim();
 
 			if(values.length > 2) {
 				args = new Object[values.length - 2];
 				for(int i =0;i<values.length - 2; ++i) {
 					if(values[i+2] instanceof CompoundVariable) {
-						args[i] = ((CompoundVariable)values[i+2]).execute();
+						args[i] = ((CompoundVariable)values[i+2]).execute().trim();
 					}
 				}
 			}
